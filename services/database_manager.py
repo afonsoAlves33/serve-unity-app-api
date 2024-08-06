@@ -14,7 +14,7 @@ class DatabaseManager:
             self.database.upload_3d_object(file_path, file_name)
         except Exception as e:
             print("Unable to run 'upload_3d_object' method:", e)
-            pass
+            return "Unable to run 'upload_3d_object' method"
         return "Upload successful"
 
 
@@ -26,6 +26,6 @@ class DatabaseManager:
             self.database.upload_video(file_path, file_name)
         except Exception as e:
             print("Unable to run 'upload_video' method: ", e)
-            pass
+            return "Unable to run 'upload_video' method"
         return "Upload successful"
 
