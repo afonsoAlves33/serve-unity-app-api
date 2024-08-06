@@ -7,6 +7,11 @@ app = FastAPI()
 FBX_OBJECT_FOLDER = "files/fbx_objects"
 TUTORIAL_VIDEO_FOLDER = "files/tutorial_videos"
 
+@app.get("/")
+def index():
+    return {
+        "main_route": "/acessfile/"
+    }
 
 @app.post("/uploadfile/")
 async def receive_3d_object_and_its_tutorial_video(object_3d: UploadFile, tutorial_video: UploadFile):
