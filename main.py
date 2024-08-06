@@ -1,45 +1,38 @@
-from azure.storage.blob import BlobServiceClient
-from dotenv import load_dotenv
-import os
+from fastapi import FastAPI, UploadFile
 
-from database_interface import Database
+from services.azure_db import AzureDatabase
+from services.database_manager import DatabaseManager
 
-load_dotenv()
+app = FastAPI()
+FBX_OBJECT_FOLDER = "files/fbx_objects"
+TUTORIAL_VIDEO_FOLDER = "files/tutorial_videos"
 
-class AzureDatabase(Database):
-    def __init__(self) -> None:
-        super().__init__()
 
-    storage_account_key = os.environ['storage_account_key']
-    storage_account_name = os.environ['storage_account_name']
-    connection_string = os.environ['connection_string']
-    objects3d_container_name = os.environ['OBJECTS3D_CONTAINER']
-    videos_container_name = os.environ['VIDEOS_CONTAINER']
-    object3d_filepath = "C:/Users/ct67ca/Documents/dev/tcc/API/01-08/serve-unity-app-api/files/fbx_objects/3.fbx"
-    video_filepath = "C:\\Users\\ct67ca\\Documents\\dev\\tcc\API\\01-08\\serve-unity-app-api\\files\\tutorial_videos\\WIN_20240802_14_13_24_Pro.mp4"
+@app.post("/uploadfile/")
+async def receive_3d_object_and_its_tutorial_video(object_3d: UploadFile, tutorial_video: UploadFile):
+    try:
+        # file_path = ""
+        # video_path = ""
+        with open(f"{FBX_OBJECT_FOLDER}\{object_3d.filename}", "wb") as folder:
+            content = await object_3d.read()
+            # necessita de testes do que acontece se ja houver um arquivo / etc
+            folder.write(content)
 
-    def upload_3d_object(self, file_path, file_name):
-        blob_service_client = BlobServiceClient.from_connection_string(self.connection_string)
-        blob_client = blob_service_client.get_blob_client(container=self.objects3d_container_name, blob=file_name)
-        try:
-            with open(file_path, "rb") as data:
-                blob_client.upload_blob(data)
-        except Exception as e:
-            print(e)
+        with open(f"{TUTORIAL_VIDEO_FOLDER}\{tutorial_video.filename}", "wb") as folder:
+            content = await tutorial_video.read()
+            folder.write(content)
 
-        print("Sucesso no upload do objeto 3d!")
+        file_path = f"{FBX_OBJECT_FOLDER}\{object_3d.filename}"
+        video_path = f"{TUTORIAL_VIDEO_FOLDER}\{tutorial_video.filename}"
+    except Exception as e:
+        return "An exception ocurred: "+ str(e)
 
-    def upload_video(self, file_path, file_name):
-        blob_service_client = BlobServiceClient.from_connection_string(self.connection_string)
-        blob_client = blob_service_client.get_blob_client(container=self.videos_container_name, blob=file_name)
-        try: 
-            with open(file_path, "rb") as data:
-                blob_client.upload_blob(data)
-        except Exception as e:
-            print(e)
+    db = DatabaseManager(AzureDatabase)
+    print(db.upload_3d_object(file_path, "new file.fbx"))
+    print(db.upload_video(video_path, "new file.mp4"))
 
-        print("Sucesso no upload do video!")
-        
-
-AzureDatabase.upload_3d_object(AzureDatabase.object3d_filepath, "3.fbx")
-AzureDatabase.upload_video(AzureDatabase.video_filepath, "3.mp4")
+    return {
+                "video": tutorial_video.filename,
+                "object_3d": object_3d.filename,
+                "sucess": True
+            }

@@ -1,6 +1,6 @@
 import time
 
-from azure_db_implementation import AzureDatabase
+from azure_db import AzureDatabase
 from database_manager import DatabaseManager
 
 db = DatabaseManager(AzureDatabase)

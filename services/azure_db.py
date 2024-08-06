@@ -2,14 +2,11 @@ from azure.storage.blob import BlobServiceClient
 from dotenv import load_dotenv
 import os
 
-from database_interface import Database
-
 load_dotenv()
 
 
-class AzureDatabase(Database):
+class AzureDatabase():
     def __init__(self):
-        super().__init__()
         self.storage_account_key = os.getenv('storage_account_key')
         self.storage_account_name = os.getenv('storage_account_name')
         self.connection_string = os.getenv('connection_string')
@@ -21,8 +18,7 @@ class AzureDatabase(Database):
         # Azure Storage Blob admin
         self.blob_service_client = BlobServiceClient.from_connection_string(self.connection_string)
 
-
-    def upload_3d_object(self, file_path, file_name):
+    def upload_3d_object(self, file_path: str, file_name: str):
         blob_client = self.blob_service_client.get_blob_client(container=self.objects3d_container_name, blob=file_name)
         try:
             with open(file_path, "rb") as data:
@@ -42,7 +38,7 @@ class AzureDatabase(Database):
             return "An error ocurred while trying to delete the file"
         return f"Deleted {file_name} successful"
 
-    def upload_video(self, file_path, file_name):
+    def upload_video(self, file_path: str, file_name: str):
         blob_client = self.blob_service_client.get_blob_client(container=self.videos_container_name, blob=file_name)
         try:
             with open(file_path, "rb") as data:
@@ -63,9 +59,8 @@ class AzureDatabase(Database):
         else:
             return f"Deleted {file_name} successful"
 
+
 if __name__ == "__main__":
     azure_db = AzureDatabase()
-
-
     azure_db.upload_3d_object(azure_db.object3d_filepath, "3.fbx")
     azure_db.upload_video(azure_db.video_filepath, "3.mp4")
