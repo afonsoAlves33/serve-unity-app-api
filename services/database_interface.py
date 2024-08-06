@@ -1,6 +1,5 @@
 from abc import ABC, abstractmethod
-
-class Database(ABC):
+class Database():
 
     @abstractmethod
     def upload_3d_object(self, file_path, file_name):

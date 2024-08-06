@@ -8,8 +8,8 @@ load_dotenv()
 
 
 class AzureDatabase(Database):
-
     def __init__(self):
+        super().__init__()
         self.storage_account_key = os.getenv('storage_account_key')
         self.storage_account_name = os.getenv('storage_account_name')
         self.connection_string = os.getenv('connection_string')
