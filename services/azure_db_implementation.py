@@ -25,9 +25,10 @@ class AzureDatabase(Database):
             with open(file_path, "rb") as data:
                 blob_client.upload_blob(data)
         except Exception as e:
-            print(f"Erro ao fazer upload do objeto 3D: {e}")
+            print(f"An error ocurred while trying to upload the file: {e}")
+            pass
         else:
-            print("Sucesso no upload do objeto 3D!")
+            return "Upload successful"
 
     def upload_video(self, file_path, file_name):
         blob_service_client = BlobServiceClient.from_connection_string(self.connection_string)
@@ -36,9 +37,10 @@ class AzureDatabase(Database):
             with open(file_path, "rb") as data:
                 blob_client.upload_blob(data)
         except Exception as e:
-            print(f"Erro ao fazer upload do vídeo: {e}")
+            print(f"An error ocurred while trying to upload the file: {e}")
+            pass
         else:
-            print("Sucesso no upload do vídeo!")
+            return "Upload successful"
 
 
 if __name__ == "__main__":

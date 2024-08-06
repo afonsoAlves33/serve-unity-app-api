@@ -1,6 +1,6 @@
 from azure_db_implementation import AzureDatabase
-from database import DatabaseManagement
+from database_manager import DatabaseManager
 
-db = DatabaseManagement(AzureDatabase)
+db = DatabaseManager(AzureDatabase)
 
 db.upload_3d_object("dst", "sdt")
