@@ -1,0 +1,48 @@
+# Ignorar arquivos e diretórios específicos de ambiente de desenvolvimento
+*.pyc
+*.pyo
+*.pyd
+__pycache__/
+*.git
+*.gitignore
+
+# Ignorar diretórios e arquivos temporários
+tmp/
+temp/
+*.log
+
+# Ignorar arquivos de configuração de IDE
+.vscode/
+.idea/
+
+# Ignorar arquivos de dependências de ambiente virtual
+venv/
+env/
+.venv/
+
+# Ignorar arquivos de build e distribuição
+build/
+dist/
+*.egg-info
+
+# Ignorar arquivos e diretórios específicos de testes
+tests/
+*.pytest_cache/
+.coverage
+nosetests.xml
+coverage.xml
+*.cover
+
+# Ignorar arquivos de instalação e cache
+*.egg
+*.eggs/
+*.py[co]
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Ignorar arquivos relacionados a dados sensíveis e secretos
+config.yaml
+
+# Ignorar arquivos relacionados a compilação e cache
+*.swp
+*.swo
