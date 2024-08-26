@@ -5,7 +5,7 @@ import os
 load_dotenv()
 
 
-class AzureDatabase():
+class AzureStorage():
     def __init__(self):
         self.storage_account_key = os.getenv('storage_account_key')
         self.storage_account_name = os.getenv('storage_account_name')
@@ -61,6 +61,6 @@ class AzureDatabase():
 
 
 if __name__ == "__main__":
-    azure_db = AzureDatabase()
+    azure_db = AzureStorage()
     azure_db.upload_3d_object(azure_db.object3d_filepath, "3.fbx")
     azure_db.upload_video(azure_db.video_filepath, "3.mp4")

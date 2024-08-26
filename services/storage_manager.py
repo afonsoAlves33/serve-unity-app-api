@@ -1,4 +1,4 @@
-class DatabaseManager:
+class StorageManager:
     def __init__(self, database) -> None:
         """
         Receive a Database Implementation to work with.

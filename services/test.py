@@ -1,12 +1,12 @@
 import time
 
-from azure_db import AzureDatabase
-from database_manager import DatabaseManager
+from services.azure_storage import AzureStorage
+from services.storage_manager import StorageManager
 
-db = DatabaseManager(AzureDatabase)
+db = StorageManager(AzureStorage)
 #
 # db.de("dst", "sdt")
-az = AzureDatabase()
+az = AzureStorage()
 print(az.delete_video("3.mp4"))
 print(az.delete_3d_object("3.fbx"))
 print("time waiting")
