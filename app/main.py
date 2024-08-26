@@ -43,7 +43,7 @@ async def upload_3d_object_and_tutorial_video(object_3d: UploadFile, tutorial_vi
     object_upload_status = False
 
     object_extension = Utils.get_file_extension(str(object_3d.filename))
-    object_name = Utils.get_only_file_name(str(object_3d.filename))
+    object_name = Utils.get_file_name(str(object_3d.filename))
     video_extension = Utils.get_file_extension(str(tutorial_video.filename))
     video_new_name = str(object_name+"."+video_extension)
 
@@ -92,7 +92,7 @@ async def upload_3d_object(object_3d: UploadFile):
 
     object_upload_status = False
     object_extension = Utils.get_file_extension(str(object_3d.filename))
-    object_name = Utils.get_only_file_name(str(object_3d.filename))
+    object_name = Utils.get_file_name(str(object_3d.filename))
 
 
     try:
@@ -145,7 +145,7 @@ async def upload_video(video: UploadFile):
 
     object_upload_status = False
     object_extension = Utils.get_file_extension(str(video.filename))
-    object_name = Utils.get_only_file_name(str(video.filename))
+    object_name = Utils.get_file_name(str(video.filename))
 
 
     try:

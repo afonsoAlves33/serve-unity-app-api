@@ -12,7 +12,7 @@ class Utils:
         return result
 
     @staticmethod
-    def get_only_file_name(file_name: str) -> str:
+    def get_file_name(file_name: str) -> str:
         last_dot_index = file_name.rfind('.')
         if last_dot_index != -1:
             result = file_name[:last_dot_index].strip()
