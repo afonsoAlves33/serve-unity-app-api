@@ -76,7 +76,7 @@ async def upload_3d_object_and_tutorial_video(object_3d: UploadFile, tutorial_vi
                     "video": tutorial_video.filename,
                     "object_3d_upload": video_upload_status,
                     "video_upload": video_upload_status,
-                    "sucess": True
+                    "success": True
                 }
 
     return {
@@ -84,7 +84,7 @@ async def upload_3d_object_and_tutorial_video(object_3d: UploadFile, tutorial_vi
         "video": tutorial_video.filename,
         "object_3d_upload": video_upload_status,
         "video_upload": video_upload_status,
-        "sucess": False
+        "success": False
     }
 
 @app.post("/upload_object/")
@@ -131,11 +131,64 @@ async def upload_3d_object(object_3d: UploadFile):
         return {
                     "object_3d": object_3d.filename,
                     "object_3d_upload": object_upload_status,
-                    "sucess": True
+                    "success": True
                 }
 
     return {
         "object_3d": object_3d.filename,
         "object_3d_upload": object_upload_status,
-        "sucess": False
+        "success": False
+    }
+
+@app.post("/upload_video/")
+async def upload_video(video: UploadFile):
+
+    object_upload_status = False
+    object_extension = Utils.get_file_extension(str(video.filename))
+    object_name = Utils.get_only_file_name(str(video.filename))
+
+
+    try:
+        sm = StorageManager(AzureStorage)
+    except Exception as e:
+        print(e)
+        raise Exception("Could not connect to the database.")
+
+    try:
+        with open(f"{TUTORIAL_VIDEO_FOLDER}\{video.filename}", "wb") as file_path:
+            content = await video.read()
+            # necessita de testes do que acontece se ja houver um arquivo / etc
+            file_path.write(content)
+
+        file_path = f"{TUTORIAL_VIDEO_FOLDER}\{video.filename}" # testar enfiar essa variavel no with open
+
+    except Exception as e:
+        return "An exception ocurred: "+ str(e)
+
+
+
+    # Uploads the file to Azure Storage
+    try:
+        upload = sm.upload_3d_object(file_path, str(video.filename))
+        if upload != "Upload successful":
+            object_upload_status = False
+        else:
+            object_upload_status = True
+            Utils.delete_file_locally(file_path)
+    except Exception as e:
+        print(e)
+        raise Exception("Could not upload the video.")
+
+
+    if object_upload_status == True:
+        return {
+                    "video": video.filename,
+                    "video_upload": object_upload_status,
+                    "success": True
+                }
+
+    return {
+        "video": video.filename,
+        "video_upload": object_upload_status,
+        "success": False
     }
