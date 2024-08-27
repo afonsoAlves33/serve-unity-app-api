@@ -1,6 +1,6 @@
 import time
 
-from services.azure_storage import AzureStorage
+from services.azure_blob_storage import AzureStorage
 from services.storage_manager import StorageManager
 
 db = StorageManager(AzureStorage)

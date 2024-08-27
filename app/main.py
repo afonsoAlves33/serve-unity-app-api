@@ -1,8 +1,8 @@
 from fastapi import FastAPI, UploadFile
 
 from app.utils import Utils
-from services.azure_storage import AzureStorage
-from services.storage_manager import StorageManager
+from services.azure_blob_storage.azure_storage import AzureStorage
+from services.azure_blob_storage.storage_manager import StorageManager
 
 
 app = FastAPI()
