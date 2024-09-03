@@ -1,5 +1,4 @@
-from fastapi import FastAPI, UploadFile
-
+from fastapi import FastAPI, UploadFile, status, Response
 from app.utils import Utils
 from services.azure_blob_storage.azure_storage import AzureStorage
 from services.azure_blob_storage.storage_manager import StorageManager
@@ -12,11 +11,13 @@ TUTORIAL_VIDEO_FOLDER = "files/tutorial_videos"
 @app.get("/")
 def index():
     return {
-        "main_route": "/acessfile/"
+        "main_route": "/upload_file/",
+        "object_upload_route": "/upload_object/",
+        "main_route": "/upload_video/"
     }
 
-@app.post("/uploadfile/")
-async def upload_3d_object_and_tutorial_video(object_3d: UploadFile, tutorial_video: UploadFile):
+@app.post("/upload_file/", status_code=201)
+async def upload_3d_object_and_tutorial_video(object_3d: UploadFile, tutorial_video: UploadFile, response: Response):
     try:
         sm = StorageManager(AzureStorage)
     except Exception as e:
@@ -79,6 +80,7 @@ async def upload_3d_object_and_tutorial_video(object_3d: UploadFile, tutorial_vi
                     "success": True
                 }
 
+    response.status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
     return {
         "object_3d": object_3d.filename,
         "video": tutorial_video.filename,
@@ -87,8 +89,8 @@ async def upload_3d_object_and_tutorial_video(object_3d: UploadFile, tutorial_vi
         "success": False
     }
 
-@app.post("/upload_object/")
-async def upload_3d_object(object_3d: UploadFile):
+@app.post("/upload_object/", status_code=201)
+async def upload_3d_object(object_3d: UploadFile, response: Response):
 
     object_upload_status = False
     object_extension = Utils.get_file_extension(str(object_3d.filename))
@@ -133,15 +135,16 @@ async def upload_3d_object(object_3d: UploadFile):
                     "object_3d_upload": object_upload_status,
                     "success": True
                 }
+    else: 
+        response.status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
+        return {
+            "object_3d": object_3d.filename,
+            "object_3d_upload": object_upload_status,
+            "success": False
+        }
 
-    return {
-        "object_3d": object_3d.filename,
-        "object_3d_upload": object_upload_status,
-        "success": False
-    }
-
-@app.post("/upload_video/")
-async def upload_video(video: UploadFile):
+@app.post("/upload_video/", status_code=201)
+async def upload_video(video: UploadFile, response: Response):
 
     object_upload_status = False
     object_extension = Utils.get_file_extension(str(video.filename))
@@ -169,7 +172,7 @@ async def upload_video(video: UploadFile):
 
     # Uploads the file to Azure Storage
     try:
-        upload = sm.upload_3d_object(file_path, str(video.filename))
+        upload = sm.upload_video(file_path, str(video.filename))
         if upload != "Upload successful":
             object_upload_status = False
         else:
@@ -186,7 +189,8 @@ async def upload_video(video: UploadFile):
                     "video_upload": object_upload_status,
                     "success": True
                 }
-
+    
+    response.status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
     return {
         "video": video.filename,
         "video_upload": object_upload_status,

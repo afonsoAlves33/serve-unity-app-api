@@ -11,11 +11,13 @@ class StorageManager:
         Upload a local file to Azure, requires the file's path and the wanted name.
         """
         try:
-            self.database.upload_3d_object(file_path, file_name)
+            upload = self.database.upload_3d_object(file_path, file_name)
         except Exception as e:
             print("Unable to run 'upload_3d_object' method:", e)
             return "Unable to upload file"
-        return "Upload successful"
+        if upload == "Upload successful":
+            return "Upload successful"
+        return "Unable to upload file"
 
 
     def upload_video(self, file_path: str, file_name: str) -> str:
@@ -23,9 +25,11 @@ class StorageManager:
         Upload a local video to Azure, requires the file's path and the wanted name.
         """
         try:
-            self.database.upload_video(file_path, file_name)
+            upload = self.database.upload_video(file_path, file_name)
         except Exception as e:
             print("Unable to run 'upload_video' method: ", e)
             return "Unable to upload video"
-        return "Upload successful"
+        if upload == "Upload successful":
+            return "Upload successful"
+        return "Unable to upload video"
 

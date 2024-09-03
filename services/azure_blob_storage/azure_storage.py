@@ -12,8 +12,6 @@ class AzureStorage():
         self.connection_string = os.getenv('connection_string')
         self.objects3d_container_name = os.getenv('OBJECTS3D_CONTAINER')
         self.videos_container_name = os.getenv('VIDEOS_CONTAINER')
-        self.object3d_filepath = "C:\\Users\\ct67ca\\Documents\\dev\\tcc\\API\\01-08\\serve-unity-app-api\\files\\fbx_objects\\3.fbx"
-        self.video_filepath = "C:\\Users\\ct67ca\\Documents\\dev\\tcc\\API\\01-08\\serve-unity-app-api\\files\\tutorial_videos\\3.mp4"
 
         # Azure Storage Blob admin
         self.blob_service_client = BlobServiceClient.from_connection_string(self.connection_string)
@@ -24,17 +22,16 @@ class AzureStorage():
             with open(file_path, "rb") as data:
                 blob_client.upload_blob(data)
         except Exception as e:
-            print(f"An error ocurred while trying to upload the file: {e}")
+            print(f"An error ocurred while trying to upload the file: {str(e)}")
             return "An error ocurred while trying to upload the file"
-        else:
-            return "Upload successful"
+        return "Upload successful"
 
     def delete_3d_object(self, file_name: str):
         try:
             obj_container = self.blob_service_client.get_container_client("objects")
             obj_container.delete_blob(file_name)
         except Exception as e:
-            print(f"An error ocurred while trying to delete the file: {e}")
+            print(f"An error ocurred while trying to delete the file: {str(e)}")
             return "An error ocurred while trying to delete the file"
         return f"Deleted {file_name} successful"
 
@@ -44,20 +41,18 @@ class AzureStorage():
             with open(file_path, "rb") as data:
                 blob_client.upload_blob(data)
         except Exception as e:
-            print(f"An error ocurred while trying to upload the file: {e}")
+            print(f"An error ocurred while trying to upload the file: {str(e)}")
             return "An error ocurred while trying to upload the file"
-        else:
-            return "Upload successful"
+        return "Upload successful"
 
     def delete_video(self, file_name: str):
         try:
             obj_container = self.blob_service_client.get_container_client("videos")
             obj_container.delete_blob(file_name)
         except Exception as e:
-            print(f"An error ocurred while trying to delete the file: {e}")
+            print(f"An error ocurred while trying to delete the file: {str(e)}")
             return "An error ocurred while trying to delete the file"
-        else:
-            return f"Deleted {file_name} successful"
+        return f"Deleted {file_name} successful"
 
 
 if __name__ == "__main__":
