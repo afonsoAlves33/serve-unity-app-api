@@ -20,7 +20,7 @@ class AzureStorage():
         blob_client = self.blob_service_client.get_blob_client(container=self.objects3d_container_name, blob=file_name)
         try:
             with open(file_path, "rb") as data:
-                blob_client.upload_blob(data)
+                blob_client.upload_blob(data, overwrite=True)
         except Exception as e:
             print(f"An error ocurred while trying to upload the file: {str(e)}")
             return "An error ocurred while trying to upload the file"
@@ -39,7 +39,7 @@ class AzureStorage():
         blob_client = self.blob_service_client.get_blob_client(container=self.videos_container_name, blob=file_name)
         try:
             with open(file_path, "rb") as data:
-                blob_client.upload_blob(data)
+                blob_client.upload_blob(data, overwrite=True)
         except Exception as e:
             print(f"An error ocurred while trying to upload the file: {str(e)}")
             return "An error ocurred while trying to upload the file"
@@ -54,8 +54,3 @@ class AzureStorage():
             return "An error ocurred while trying to delete the file"
         return f"Deleted {file_name} successful"
 
-
-if __name__ == "__main__":
-    azure_db = AzureStorage()
-    azure_db.upload_3d_object(azure_db.object3d_filepath, "3.fbx")
-    azure_db.upload_video(azure_db.video_filepath, "3.mp4")
