@@ -11,9 +11,7 @@ TUTORIAL_VIDEO_FOLDER = "files/tutorial_videos"
 @app.get("/")
 def index():
     return {
-        "main_route": "/upload_file/",
-        "object_upload_route": "/upload_object/",
-        "main_route": "/upload_video/"
+        "routes": ["/upload_file/", "/upload_object/", "/upload_video/"]
     }
 
 @app.post("/upload_file/", status_code=201)
