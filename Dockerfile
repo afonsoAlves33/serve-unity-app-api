@@ -9,9 +9,5 @@ RUN apk update \
 
 COPY . .
 
-
-ENV UVICORN_CMD="uvicorn app.main:app --host 0.0.0.0 --proxy-headers --port 8000"
-
-EXPOSE 8000
-
-CMD ["sh", "-c", "$UVICORN_CMD"]
+EXPOSE 9000
+CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--proxy-headers", "--port", "9000", "--reload"]
