@@ -196,5 +196,5 @@ async def upload_video(video: UploadFile, response: Response):
     return {
         "video": video.filename,
         "video_upload": object_upload_status,
-        "success": False
+        "success": Falseerror handling
     }
