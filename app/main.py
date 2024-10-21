@@ -1,4 +1,4 @@
-from fastapi import FastAPI, UploadFile, status, Response
+from fastapi import FastAPI, UploadFile, status, Response, HTTPException
 from app.utils import Utils
 from services.azure_blob_storage.azure_storage import AzureStorage
 from services.azure_blob_storage.storage_manager import StorageManager
@@ -94,12 +94,14 @@ async def upload_3d_object(object_3d: UploadFile, response: Response):
     object_extension = Utils.get_file_extension(str(object_3d.filename))
     object_name = Utils.get_file_name(str(object_3d.filename))
 
+    if str(object_extension) != "fbx":
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail='You should upload ".fbx" files')
 
     try:
         sm = StorageManager(AzureStorage)
     except Exception as e:
         print(e)
-        raise Exception("Could not connect to the database.")
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="We had a trouble connecting to the database")
 
     try:
         with open(f"{FBX_OBJECT_FOLDER}\{object_3d.filename}", "wb") as file_path:
@@ -110,7 +112,7 @@ async def upload_3d_object(object_3d: UploadFile, response: Response):
         file_path = f"{FBX_OBJECT_FOLDER}\{object_3d.filename}" # testar enfiar essa variavel no with open
 
     except Exception as e:
-        return "An exception ocurred: "+ str(e)
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="An error ocurred")
 
 
 
@@ -124,7 +126,7 @@ async def upload_3d_object(object_3d: UploadFile, response: Response):
             Utils.delete_file_locally(file_path)
     except Exception as e:
         print(e)
-        raise Exception("Could not upload the file.")
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="An error ocurred, could'nt upload your file")
 
 
     if object_upload_status == True:
@@ -148,12 +150,14 @@ async def upload_video(video: UploadFile, response: Response):
     object_extension = Utils.get_file_extension(str(video.filename))
     object_name = Utils.get_file_name(str(video.filename))
 
+    if str(object_extension) == "fbx":
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="You should upload videos")
 
     try:
         sm = StorageManager(AzureStorage)
     except Exception as e:
         print(e)
-        raise Exception("Could not connect to the database.")
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="We had a trouble connecting to the database")
 
     try:
         with open(f"{TUTORIAL_VIDEO_FOLDER}\{video.filename}", "wb") as file_path:
@@ -164,7 +168,7 @@ async def upload_video(video: UploadFile, response: Response):
         file_path = f"{TUTORIAL_VIDEO_FOLDER}\{video.filename}" # testar enfiar essa variavel no with open
 
     except Exception as e:
-        return "An exception ocurred: "+ str(e)
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="An error ocurred")
 
 
 
@@ -178,7 +182,7 @@ async def upload_video(video: UploadFile, response: Response):
             Utils.delete_file_locally(file_path)
     except Exception as e:
         print(e)
-        raise Exception("Could not upload the video.")
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="An error ocurred, could'nt upload your file")
 
 
     if object_upload_status == True:
