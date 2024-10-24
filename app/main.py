@@ -15,7 +15,7 @@ def index():
     }
 
 @app.post("/upload_file/", status_code=201)
-async def upload_3d_object_and_tutorial_video(image: UploadFile, tutorial_video: UploadFile, response: Response):
+async def upload_3d_object_and_tutorial_video(object_3d: UploadFile, tutorial_video: UploadFile, response: Response):
     try:
         sm = StorageManager(AzureStorage)
     except Exception as e:
