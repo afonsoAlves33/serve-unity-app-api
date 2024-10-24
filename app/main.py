@@ -15,7 +15,7 @@ def index():
     }
 
 @app.post("/upload_file/", status_code=201)
-async def upload_3d_object_and_tutorial_video(object_3d: UploadFile, tutorial_video: UploadFile, response: Response):
+async def upload_3d_object_and_tutorial_video(image: UploadFile, tutorial_video: UploadFile, response: Response):
     try:
         sm = StorageManager(AzureStorage)
     except Exception as e:
@@ -198,3 +198,61 @@ async def upload_video(video: UploadFile, response: Response):
         "video_upload": object_upload_status,
         "success": False
     }
+
+
+@app.post("/upload_image/", status_code=201)
+async def upload_image(image: UploadFile):
+
+    object_upload_status = False
+    object_extension = Utils.get_file_extension(str(image.filename))
+    object_name = Utils.get_file_name(str(image.filename))
+
+    if str(object_extension) != "png":
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail='You should upload ".fbx" files')
+
+    try:
+        sm = StorageManager(AzureStorage)
+    except Exception as e:
+        print(e)
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="We had a trouble connecting to the database")
+
+    try:
+        with open(f"{FBX_OBJECT_FOLDER}\{image.filename}", "wb") as file_path:
+            content = await image.read()
+            # necessita de testes do que acontece se ja houver um arquivo / etc
+            file_path.write(content)
+
+        file_path = f"{FBX_OBJECT_FOLDER}\{image.filename}" # testar enfiar essa variavel no with open
+
+    except Exception as e:
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="An error ocurred")
+
+
+
+    # Uploads the file to Azure Storage
+    try:
+        upload = sm.upload_image(file_path, str(image.filename))
+        if upload != "Upload successful":
+            object_upload_status = False
+        else:
+            object_upload_status = True
+            Utils.delete_file_locally(file_path)
+    except Exception as e:
+        print(e)
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="An error ocurred, could'nt upload your file")
+
+
+    if object_upload_status == True:
+        return {
+                    "image": image.filename,
+                    "image_upload": object_upload_status,
+                    "success": True
+                }
+    else:
+        response = Response 
+        response.status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
+        return {
+            "image": image.filename,
+            "image_upload": object_upload_status,
+            "success": False
+        }

@@ -33,3 +33,16 @@ class StorageManager:
             return "Upload successful"
         return "Unable to upload video"
 
+    
+    def upload_image(self, file_path: str, file_name: str) -> str:
+        """
+        Upload a local image to Azure, requires the file's path and the wanted name.
+        """
+        try:
+            upload = self.database.upload_image(file_path, file_name)
+        except Exception as e:
+            print("Unable to run 'upload_video' method: ", e)
+            return "Unable to upload video"
+        if upload == "Upload successful":
+            return "Upload successful"
+        return "Unable to upload video"
