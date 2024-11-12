@@ -41,8 +41,21 @@ class StorageManager:
         try:
             upload = self.database.upload_image(file_path, file_name)
         except Exception as e:
-            print("Unable to run 'upload_video' method: ", e)
-            return "Unable to upload video"
+            print("Unable to run 'upload_image' method: ", e)
+            return "Unable to upload image"
         if upload == "Upload successful":
             return "Upload successful"
-        return "Unable to upload video"
+        return "Unable to upload image"
+
+    def upload_component_image(self, file_path: str, file_name: str) -> str:
+        """
+        Upload a local component image to Azure, requires the file's path and the wanted name.
+        """
+        try:
+            upload = self.database.upload_component_image(file_path, file_name)
+        except Exception as e:
+            print("Unable to run 'upload_component_image' method: ", e)
+            return "Unable to upload component image"
+        if upload == "Upload successful":
+            return "Upload successful"
+        return "Unable to upload component image"

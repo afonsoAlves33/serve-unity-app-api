@@ -13,6 +13,7 @@ class AzureStorage():
         self.objects3d_container_name = os.getenv('OBJECTS3D_CONTAINER')
         self.videos_container_name = os.getenv('VIDEOS_CONTAINER')
         self.images_container_name = os.getenv('IMAGES_CONTAINER')
+        self.component_images_container_name = os.getenv('COMPONENT_IMAGES_CONTAINER')
 
         # Azure Storage Blob admin
         self.blob_service_client = BlobServiceClient.from_connection_string(self.connection_string)
@@ -75,3 +76,12 @@ class AzureStorage():
             return "An error ocurred while trying to delete the file"
         return f"Deleted {file_name} successful"
     
+    def upload_component_image(self, file_path: str, file_name: str):
+        blob_client = self.blob_service_client.get_blob_client(container=self.images_container_name, blob=file_name)
+        try:
+            with open(file_path, "rb") as data:
+                blob_client.upload_blob(data, overwrite=True)
+        except Exception as e:
+            print(f"An error ocurred while trying to upload the file: {str(e)}")
+            return "An error ocurred while trying to upload the file"
+        return "Upload successful"

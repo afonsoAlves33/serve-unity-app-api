@@ -7,11 +7,14 @@ from services.azure_blob_storage.storage_manager import StorageManager
 app = FastAPI()
 FBX_OBJECT_FOLDER = "files/fbx_objects"
 TUTORIAL_VIDEO_FOLDER = "files/tutorial_videos"
+COMPONENT_IMAGES_FOLDER = "files/component_image"
+IMAGES_FOLDER = "files/images"
+
 
 @app.get("/")
 def index():
     return {
-        "routes": ["/upload_file/", "/upload_object/", "/upload_video/"]
+        "routes": ["/upload_image/", "/upload_object/", "/upload_video/", "/upload_component_image/"]
     }
 
 @app.post("/upload_file/", status_code=201)
@@ -203,11 +206,9 @@ async def upload_video(video: UploadFile, response: Response):
 @app.post("/upload_image/", status_code=201)
 async def upload_image(image: UploadFile):
 
-    object_upload_status = False
-    object_extension = Utils.get_file_extension(str(image.filename))
-    object_name = Utils.get_file_name(str(image.filename))
+    image_extension = Utils.get_file_extension(str(image.filename))
 
-    if str(object_extension) != "png":
+    if str(image_extension) != "png":
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail='You should upload ".fbx" files')
 
     try:
@@ -217,12 +218,12 @@ async def upload_image(image: UploadFile):
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="We had a trouble connecting to the database")
 
     try:
-        with open(f"{FBX_OBJECT_FOLDER}\{image.filename}", "wb") as file_path:
+        with open(f"{IMAGES_FOLDER}\{image.filename}", "wb") as file_path:
             content = await image.read()
             # necessita de testes do que acontece se ja houver um arquivo / etc
             file_path.write(content)
 
-        file_path = f"{FBX_OBJECT_FOLDER}\{image.filename}" # testar enfiar essa variavel no with open
+        file_path = f"{IMAGES_FOLDER}\{image.filename}" # testar enfiar essa variavel no with open
 
     except Exception as e:
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="An error ocurred")
@@ -233,19 +234,19 @@ async def upload_image(image: UploadFile):
     try:
         upload = sm.upload_image(file_path, str(image.filename))
         if upload != "Upload successful":
-            object_upload_status = False
+            image_upload_status = False
         else:
-            object_upload_status = True
+            image_upload_status = True
             Utils.delete_file_locally(file_path)
     except Exception as e:
         print(e)
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="An error ocurred, could'nt upload your file")
 
 
-    if object_upload_status == True:
+    if image_upload_status == True:
         return {
                     "image": image.filename,
-                    "image_upload": object_upload_status,
+                    "image_upload": image_upload_status,
                     "success": True
                 }
     else:
@@ -253,6 +254,61 @@ async def upload_image(image: UploadFile):
         response.status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
         return {
             "image": image.filename,
-            "image_upload": object_upload_status,
+            "image_upload": image_upload_status,
+            "success": False
+        }
+
+
+@app.post("/upload_component_image/", status_code=201)
+async def upload_component_image(component_image: UploadFile):
+
+    image_extension = Utils.get_file_extension(str(component_image.filename))
+
+    if str(image_extension) != "png":
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail='You should upload ".fbx" files')
+
+    try:
+        sm = StorageManager(AzureStorage)
+    except Exception as e:
+        print(e)
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="We had a trouble connecting to the database")
+
+    try:
+        with open(f"{COMPONENT_IMAGES_FOLDER}\{component_image.filename}", "wb") as file_path:
+            content = await component_image.read()
+            file_path.write(content)
+
+        file_path = f"{COMPONENT_IMAGES_FOLDER}\{component_image.filename}"
+
+    except Exception as e:
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="An error ocurred")
+
+
+
+    # Uploads the file to Azure Storage
+    try:
+        upload = sm.upload_component_image(file_path, str(component_image.filename))
+        if upload != "Upload successful":
+            component_image_upload_status = False
+        else:
+            component_image_upload_status = True
+            Utils.delete_file_locally(file_path)
+    except Exception as e:
+        print(e)
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="An error ocurred, could'nt upload your file")
+
+
+    if component_image_upload_status == True:
+        return {
+                    "component_image": component_image.filename,
+                    "component_image_upload": component_image_upload_status,
+                    "success": True
+                }
+    else:
+        response = Response
+        response.status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
+        return {
+            "component_image": component_image.filename,
+            "component_image_upload": component_image_upload_status,
             "success": False
         }
