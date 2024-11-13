@@ -77,7 +77,7 @@ class AzureStorage():
         return f"Deleted {file_name} successful"
     
     def upload_component_image(self, file_path: str, file_name: str):
-        blob_client = self.blob_service_client.get_blob_client(container=self.images_container_name, blob=file_name)
+        blob_client = self.blob_service_client.get_blob_client(container=self.component_images_container_name, blob=file_name)
         try:
             with open(file_path, "rb") as data:
                 blob_client.upload_blob(data, overwrite=True)
@@ -85,3 +85,21 @@ class AzureStorage():
             print(f"An error ocurred while trying to upload the file: {str(e)}")
             return "An error ocurred while trying to upload the file"
         return "Upload successful"
+
+    def delete_container(self, container_name):
+        try:
+            obj_container = self.blob_service_client.get_container_client(container_name)
+            obj_container.delete_container()
+        except Exception as e:
+            print(f"An error ocurred while trying to delete the file: {str(e)}")
+            return "An error ocurred while trying to delete the file"
+        return f"Deleted successful"
+
+
+if __name__ == "__main__":
+    az = AzureStorage()
+    # delete esse container
+    namevar = ""
+    az.delete_container(namevar)
+    print(f"deletou o container {namevar}")
+
